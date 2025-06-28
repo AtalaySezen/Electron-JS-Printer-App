@@ -1,0 +1,36 @@
+<button id="select-pdf">PDF Seç</button>
+<select id="printer-list"></select>
+<button id="print-button">Yazdır</button>
+
+<script>
+  let selectedFilePath = null;
+
+  document.getElementById("select-pdf").addEventListener("click", async () => {
+    selectedFilePath = await window.printerAPI.selectPdf();
+    console.log("Seçilen PDF:", selectedFilePath);
+    if (!selectedFilePath) {
+      alert("PDF seçilmedi.");
+    }
+  });
+
+  document.getElementById("print-button").addEventListener("click", async () => {
+    const printerName = document.getElementById("printer-list").value;
+    if (!selectedFilePath || !printerName) {
+      alert("PDF ve yazıcı seçilmeli!");
+      return;
+    }
+    await window.printerAPI.print(printerName, selectedFilePath);
+    alert("Yazdırma işlemi gönderildi.");
+  });
+
+  // Yazıcıları yükle
+  window.printerAPI.getPrinters().then(printers => {
+    const printerList = document.getElementById("printer-list");
+    printers.forEach(p => {
+      const option = document.createElement("option");
+      option.value = p;
+      option.textContent = p;
+      printerList.appendChild(option);
+    });
+  });
+</script>
